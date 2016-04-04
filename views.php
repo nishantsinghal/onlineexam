@@ -31,7 +31,7 @@ function tree_view() {
 	if ($_SESSION['ROLE'] == 1) {
 		$content .= '<ul>
 						<li><a href="?editProfile">Edit profile</a></li>
-						<li><a href="?addRole">Add Role</a></li>
+						<li><a href="?addRole">Manage Role</a></li>
 						<li><a href="?addUser">Add User</a></li>
 						<li><a href="?addSubject">Add Subject</a></li>
 						<li><a href="?manageFaculty">Manage faculty</a></li>
@@ -78,21 +78,24 @@ function role_view($data) {
 	$content = '<div class="midcon">
 								<div class="prof">
 									<div class="roletable">';
-	$content.= '<form method="post" action="?delRole">
-								<table>
+	$content.= '<table border="1">
+								<tbody>
 									<tr>
 										<td>Role id</td>
 										<td>Role</td>
 									</tr>';
 		foreach($data as $key => $value) {
-				$content .= '<tr> 
-										<td>'.$key.'</td>
-										<td>'.$value.'</td>
-										<td<input type="submit" value="Delete"/></td>
+				$content .= '<form method="post" action="?delRole">
+										<tr> 
+										<td><input type="text" readonly name="rid" value="'.$key.'"/></td>
+										<td><input type="text" readonly name="role" value="'.$value.'"/></td>
+										<td><input type="submit" value="Delete"/></td>
 									 </tr>
-									</table></form>';
+									 </form>';
+									 $i++;
 	}
-	$content.= '</div> <div class="roletable">
+	$content.= '</tbody>
+									</table></div> <div class="roletable">
 									<form method="post" action="?saveRole">
 										<label id="tagname">Add Role</label><input type="text" name="role"/>
 										<input type="submit" value="Save"/>

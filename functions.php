@@ -28,6 +28,8 @@ session_start();
 				return save_profile();
 			}elseif ($_SERVER["QUERY_STRING"] == 'addRole') {
 				return add_role();
+			}elseif ($_SERVER["QUERY_STRING"] == 'delRole') {
+				return del_role();
 			}elseif ($_SERVER["QUERY_STRING"] == 'saveRole') {
 				return save_role();
 			}elseif ($_SERVER["QUERY_STRING"] == 'success') {
@@ -130,8 +132,8 @@ session_start();
 
 		/* for save profile */
 		function save_profile() {
-			print_r( $_POST);
-			echo $_POST['First_Name'];
+			// print_r( $_POST);
+			// echo $_POST['First_Name'];
 			$view = tree_view();
 			$conn = dbconnect();
 			$uid = $_SESSION['UID'];
@@ -189,11 +191,20 @@ session_start();
 			$query = "select * from role";
 			$rel   = mysql_query($query,$conn);
 			while ($data  = mysql_fetch_array($rel)) {
-			 	echo $data['r_id']." with ".$data['role']."<br>";
+			 	// echo $data['r_id']." with ".$data['role']."<br>";
 			  $array[$data['r_id']] = $data['role'];
 			 } 
 			$view .= role_view($array);
 			return $view;
+		}
+
+		function del_role() {
+			$rid   = $_POST['rid'];
+			$role  = $_POST['role'];
+			$conn  = dbconnect();
+			$query = "delete from role where r_id='$rid'";
+			$rel   = mysql_query($query,$conn);
+			header("Location: http://onlineexam.com/?addRole");
 		}
 
 		function save_role() {
@@ -215,7 +226,7 @@ session_start();
 				if (!$rel1) {
 					die('could not insert data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?success");
+				header("Location: http://onlineexam.com/?addRole");
 			}else {
 				return fail_view();
 			}
