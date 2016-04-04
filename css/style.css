@@ -1,0 +1,129 @@
+body{
+	margin:0;
+	padding:0;
+}
+#container{
+	width: 100%;
+	height: auto;
+}
+.nav{
+	height:100px;
+	width: 100%;
+	background-color:#2196F3;
+	text-align: center;
+	vertical-align: middle;
+	box-shadow: 0 1px 3px;
+}
+.nav h1{
+	margin: 0;
+	padding-top: 20px;
+	color:white;
+	text-shadow: 0 1px 3px;
+}
+#mar{
+	margin-top: 10px;
+	color: dodgerblue;
+}
+.login-bar{
+	margin-top: 50px;
+    width: 400px;
+    height: 300px;
+    
+    border: 1px solid dodgerblue;
+    box-shadow: 0 5px 10px;
+}
+#uname{
+	margin: 20px 0;
+	text-align: center;
+	width:80%;
+	padding: 20px;
+}
+#pass{
+	margin: 20px 0;
+	width: 80%;
+	padding: 20px;
+	text-align: center;
+}
+
+#sbutton{
+	margin: 20px 0;
+	width: 50%;
+	background-color: green;
+	padding: 10px;
+	border:1px solid green;
+
+}
+#sbutton:hover{
+	border:1px solid dodgerblue;
+	box-shadow: 0 0 10px;
+	cursor:pointer;
+}
+
+/*for profile*/
+.band{
+	background-color: wheat;
+	box-shadow: 0 0 20px;
+	padding: 10px;
+}
+.band h2{
+	margin: 0;
+	color:tomato;
+}
+.left{
+	display: inline-block;
+	width:200px;
+	height:500px;
+	background-color: green;
+}
+.left ul{
+	margin: 0;
+	padding: 0;
+	padding-top:10px;
+}
+.left ul li{
+	list-style: none;
+	margin: 20px;
+	padding-top: 10px;
+	height: 30px;
+	text-align: center;
+}
+.left ul li:hover {
+	background-color: dodgerblue;
+	box-shadow: 0 0 20px;
+}
+.left ul li a {
+	text-decoration: none;
+	color:wheat;
+	display: block;
+}
+.left ul li a:hover {
+	color:white;
+}
+.error{
+	display: inline-block;
+}
+.error p{
+	color: red;
+	background-color: green;
+	text-align: center;
+}
+.midcon {
+	display:inline-block;
+	vertical-align: top;
+	box-shadow: 0 0 10px;
+	margin: 10px 0 0 10px;
+}
+.prof {
+	border:1px solid red;
+	margin:20px;
+}
+#tagname {
+	display:inline-block;
+
+}
+#tagvalue {
+	display:inline-block;
+}
+.roletable {
+	border:1px solid black;
+}
