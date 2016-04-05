@@ -33,7 +33,7 @@ function tree_view() {
 						<li><a href="?editProfile">Edit profile</a></li>
 						<li><a href="?addRole">Manage Role</a></li>
 						<li><a href="?addUser">Add User</a></li>
-						<li><a href="?addSubject">Add Subject</a></li>
+						<li><a href="?manageSubject">Manage Subject</a></li>
 						<li><a href="?manageFaculty">Manage faculty</a></li>
 						<li><a href="?manageStudent">Manage student</a></li>
 					</ul>';
@@ -92,7 +92,6 @@ function role_view($data) {
 										<td><input type="submit" value="Delete"/></td>
 									 </tr>
 									 </form>';
-									 $i++;
 	}
 	$content.= '</tbody>
 									</table></div> <div class="roletable">
@@ -105,9 +104,111 @@ function role_view($data) {
 	return $content;
 }
 
+function adduserview($data) {
+	$content = '<div class="midcon">
+								<div class="prof">
+									<form method="post" action="?saveUser">
+										Username::<input type="text" name="uname"/><br>
+										Password::<input type="text" name="pass"/><br>
+										Select Role::<select name="role">';
+										foreach($data as $key=>$value) {
+											$content .= '<option value="'.$key.'">'.$value.'</option>';
+										}
+							$content.='</select><br><input type="submit" value="save"/>
+									</form>
+								</div>
+							</div>';
+	return $content;
+}
 
+function create_profileview($data) {
+	$content = '<div class="midcon">
+								<div class="prof">
+									<form method="post" action="?submitUser">';
+	$content.= '<table border="1">
+								<tbody>';
+	if($_SESSION['newrole'] == 3) {
+		$i=0;
+		foreach($data as $key => $value) {
+			if ($i<3) { 
+				$content .= '<tr> 
+											<td><label>'.$key.'</label></td>
+											<td><input type="text" name="'.$key.'" value="'.$value.'"/></td>
+										 </tr>';
+			}							 
+		  $i++;
+		}
+		$content .= '<tr> 
+											<td><label>Select Class:</label></td>
+											<td><select name="class">';
+		$j=0;
+		$k=0;
+		foreach	($data as $key => $value) {	
+			if ($j>2) {
+				$cid  = $data["Class$k"]['Cid'];
+				$prog = $data["Class$k"]['Program'];
+				$bat  = $data["Class$k"]['Batch'];
+				$brnch= $data["Class$k"]['Branch'];
+				$sec  = $data["Class$k"]['Section'];
+				$content .= '<option value="'.$cid.'">'.$prog."/".$brnch."/".$sec."/".$bat.'</option>';
+				$k++;
+			}
+			$j++;
+		}
+		$content .= '</select></td>
+										 </tr>';
+	}else {
+		foreach($data as $key => $value) {
+			$content .= '<tr> 
+										<td><label>'.$key.'</label></td>
+										<td><input type="text" name="'.$key.'" value="'.$value.'"/></td>
+									 </tr>';
+		}
+	}								
+	$content .= '</tbody>
+									</table><input type="submit" value="save" /></form>
+								</div>
+							</div>';
+	return $content;
+}
 
-
+function subject_view($data) {
+	$content = '<div class="midcon">
+								<div class="prof">
+									<div class="roletable">';
+	$content.= '<table border="1">
+								<tbody>
+									<tr>
+										<td>Subject ID</td>
+										<td>Subject Name</td>
+										<td>Subject Code</td>
+									</tr>';
+		$k = 0;
+		foreach($data as $key => $value) {
+				$sid   = $data["subject$k"]['sid'];
+				$sname = $data["subject$k"]['sname'];
+				$scode = $data["subject$k"]['scode'];
+				$content .= '<form method="post" action="?delSubject">
+										<tr> 
+										<td><input type="text" readonly name="sid" value="'.$sid.'"/></td>
+										<td><input type="text" readonly name="sname" value="'.$sname.'"/></td>
+										<td><input type="text" readonly name="s" value="'.$scode.'"/></td>
+										<td><input type="submit" value="Delete"/></td>
+									 </tr>
+									 </form>';
+	$k++;
+	}
+	$content.= '<form method="post" action="?saveSubject">
+										<tr>
+										<td><label id="tagname">Add Subject</label></td>
+										<td><input type="text" name="subname"/></td>
+										<td><input type="text" name="subcode"/></td>
+										<td><input type="submit" value="Add"/></td>
+									<tr></form></tbody></table></div>
+								</div>
+							</div>';
+	return $content;
+}
 /*
 ** general views
 */
