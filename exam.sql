@@ -30,7 +30,7 @@ CREATE TABLE `admin_profile` (
   PRIMARY KEY (`a_id`),
   KEY `u_id` (`u_id`),
   CONSTRAINT `admin_profile_ibfk_1` FOREIGN KEY (`u_id`) REFERENCES `login` (`u_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -39,7 +39,7 @@ CREATE TABLE `admin_profile` (
 
 LOCK TABLES `admin_profile` WRITE;
 /*!40000 ALTER TABLE `admin_profile` DISABLE KEYS */;
-INSERT INTO `admin_profile` VALUES (1,'admin','sahab',1);
+INSERT INTO `admin_profile` VALUES (1,'admin','sahabji',1),(2,'Nishant','Singhal',12),(3,'Jitendra','Bhai',13),(4,'Tom','Bhai',18);
 /*!40000 ALTER TABLE `admin_profile` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,7 +57,7 @@ CREATE TABLE `class` (
   `branch` varchar(10) DEFAULT NULL,
   `program` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`class_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,7 +66,7 @@ CREATE TABLE `class` (
 
 LOCK TABLES `class` WRITE;
 /*!40000 ALTER TABLE `class` DISABLE KEYS */;
-INSERT INTO `class` VALUES (1,'A','A1','CS','BTech');
+INSERT INTO `class` VALUES (1,'A','A1','CS','BTech'),(2,'B','B1','CS','BTech');
 /*!40000 ALTER TABLE `class` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -88,7 +88,7 @@ CREATE TABLE `faculty_profile` (
   PRIMARY KEY (`f_id`),
   KEY `u_id` (`u_id`),
   CONSTRAINT `faculty_profile_ibfk_1` FOREIGN KEY (`u_id`) REFERENCES `login` (`u_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,7 @@ CREATE TABLE `faculty_profile` (
 
 LOCK TABLES `faculty_profile` WRITE;
 /*!40000 ALTER TABLE `faculty_profile` DISABLE KEYS */;
-INSERT INTO `faculty_profile` VALUES (1,'Faculty','Ustad',2000.00,'HOD','CS',2);
+INSERT INTO `faculty_profile` VALUES (1,'Faculty','Ustad',20000.00,'HODnn','CS',2),(2,'Mehul','Mahirishi',10000.00,'Lecturer','CS',19);
 /*!40000 ALTER TABLE `faculty_profile` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,7 +117,7 @@ CREATE TABLE `login` (
   UNIQUE KEY `username` (`username`),
   KEY `r_id` (`r_id`),
   CONSTRAINT `login_ibfk_1` FOREIGN KEY (`r_id`) REFERENCES `role` (`r_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +126,7 @@ CREATE TABLE `login` (
 
 LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
-INSERT INTO `login` VALUES (1,'admin','admin',1),(2,'faculty','faculty',2),(3,'student','student',3);
+INSERT INTO `login` VALUES (1,'admin','admin',1),(2,'faculty','faculty',2),(3,'student','student',3),(12,'nishu','nishu',1),(13,'jitendra','jitu',1),(15,'ram','ram',3),(16,'mohan','mohan',3),(18,'tom','tom',1),(19,'mehul','mehul',2);
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,7 +141,7 @@ CREATE TABLE `role` (
   `r_id` int(11) NOT NULL AUTO_INCREMENT,
   `role` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`r_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -150,7 +150,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'admin'),(2,'faculty'),(3,'student'),(6,'dd'),(7,'ej');
+INSERT INTO `role` VALUES (1,'admin'),(2,'faculty'),(3,'student'),(11,'client');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -173,7 +173,7 @@ CREATE TABLE `student_profile` (
   KEY `class_id` (`class_id`),
   CONSTRAINT `student_profile_ibfk_1` FOREIGN KEY (`u_id`) REFERENCES `login` (`u_id`),
   CONSTRAINT `student_profile_ibfk_2` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -182,8 +182,33 @@ CREATE TABLE `student_profile` (
 
 LOCK TABLES `student_profile` WRITE;
 /*!40000 ALTER TABLE `student_profile` DISABLE KEYS */;
-INSERT INTO `student_profile` VALUES (1,'Student','Bhai',11,3,1);
+INSERT INTO `student_profile` VALUES (1,'Student','Bhai',11,3,1),(2,'Ram','Charan',14,15,2),(3,'Mohan','Pyare',12,16,1);
 /*!40000 ALTER TABLE `student_profile` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `subject`
+--
+
+DROP TABLE IF EXISTS `subject`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `subject` (
+  `sub_id` int(11) NOT NULL AUTO_INCREMENT,
+  `sub_name` varchar(100) DEFAULT NULL,
+  `sub_code` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`sub_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `subject`
+--
+
+LOCK TABLES `subject` WRITE;
+/*!40000 ALTER TABLE `subject` DISABLE KEYS */;
+INSERT INTO `subject` VALUES (1,'Math','M1'),(2,'English','E1');
+/*!40000 ALTER TABLE `subject` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -195,4 +220,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-04 12:59:58
+-- Dump completed on 2016-04-05 16:19:26
