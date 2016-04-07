@@ -127,3 +127,10 @@ body{
 .roletable {
 	border:1px solid black;
 }
+#generalhead {
+	color:green;
+	text-align: center;
+}
+#nochange {
+	background-color: grey;
+}

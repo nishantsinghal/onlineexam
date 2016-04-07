@@ -47,7 +47,25 @@ session_start();
 			}elseif ($_SERVER["QUERY_STRING"] == 'saveSubject') {
 				return add_subject();
 			}elseif ($_SERVER["QUERY_STRING"] == 'manageFaculty') {
-				return add_subject();
+				return manage_faculty();
+			}elseif ($_SERVER["QUERY_STRING"] == 'editFaculty') {
+				if ( isset($_POST['edit'])) {
+					return edit_faculty();
+				}elseif ( isset($_POST['delete'])) {
+					return del_faculty();
+				}
+			}elseif ($_SERVER["QUERY_STRING"] == 'saveFaculty') {
+				return save_faculty();
+			}elseif ($_SERVER["QUERY_STRING"] == 'manageStudent') {
+				return manage_student();
+			}elseif ($_SERVER["QUERY_STRING"] == 'editStudent') {
+				if ( isset($_POST['edit'])) {
+					return edit_student();
+				}elseif ( isset($_POST['delete'])) {
+					return del_student();
+				}
+			}elseif ($_SERVER["QUERY_STRING"] == 'saveStudent') {
+				return save_student();
 			}
 		}
 
@@ -400,7 +418,137 @@ session_start();
 		}
 
 
+	
 
+		/************************** manage faculty *******************************/
+
+		function manage_faculty() {
+			$view = tree_view();
+			$conn = dbconnect();
+			$q1   = "select * from faculty_profile";
+			$rel  = mysql_query($q1,$conn);
+			if(!$rel)
+				die('could not execute:'.mysql_error());
+			$i = 0;
+			while( $data = mysql_fetch_array($rel) ) {
+				$faculty["$i"]=array('fid'=>$data['f_id'],'fname'=>$data['first_name'],'lname'=>$data['last_name'],'dept'=>$data['department'],'post'=>$data['post'],'sal'=>$data['salary']);
+				$i++;
+			}
+			$view .= m_faculty_view($faculty);
+			return $view;
+		}
+
+		function edit_faculty() {
+			$view = tree_view();
+			$conn = dbconnect();
+			$fid  = $_POST['faculty_id'];
+			//echo $fid;
+			$q1   = "select * from faculty_profile where f_id=$fid";
+			$rel  = mysql_query($q1,$conn);
+			if(!$rel)
+				die('could not execute:'.mysql_error());
+			while( $data = mysql_fetch_array($rel) ) {
+				$faculty = array('fid'=>$data['f_id'],'fname'=>$data['first_name'],'lname'=>$data['last_name'],'dept'=>$data['department'],'post'=>$data['post'],'sal'=>$data['salary']);
+				//print_r($faculty);
+			}
+			$view .= faculty_edit($faculty);
+			return $view;
+		}
+
+		function del_faculty() {
+			$fid   = $_POST['faculty_id'];
+			$conn  = dbconnect();
+			$quer  = "select u_id from faculty_profile where f_id=$fid";
+			$re    = mysql_query($quer,$conn);
+			$resul = mysql_fetch_array($re);
+			$query = "delete from faculty_profile where f_id=$fid";
+			$rel   = mysql_query($query,$conn);
+			$query2= "delete from login where u_id=$resul[0]";
+			$rel1  = mysql_query($query2,$conn);
+			header("Location: http://onlineexam.com/?manageFaculty");
+		}
+
+		function save_faculty() {
+			$fid  = $_POST['fid'];
+			$dept = $_POST['dept'];
+			$post = $_POST['Post'];
+			$sal  = $_POST['sal'];
+			$conn  = dbconnect();
+			$query = "update faculty_profile set department='$dept',post='$post',salary=$sal where f_id=$fid";
+			$rel   = mysql_query($query,$conn);
+			header("Location: http://onlineexam.com/?success");
+		}
+
+
+
+		/************************** manage student *******************************/
+
+		function manage_student() {
+			$view = tree_view();
+			$conn = dbconnect();
+			$q1   = "select * from student_profile";
+			$rel  = mysql_query($q1,$conn);
+			if(!$rel)
+				die('could not execute:'.mysql_error());
+			$i = 0;
+			while( $data = mysql_fetch_array($rel) ) {
+				$student["$i"]=array('sid'=>$data['s_id'],'fname'=>$data['first_name'],'lname'=>$data['last_name'],'roll'=>$data['roll_no']);
+				$i++;
+			}
+			$view .= m_student_view($student);
+			return $view;
+		}
+
+		function edit_student() {
+			$view = tree_view();
+			$conn = dbconnect();
+			$sid  = $_POST['s_id'];
+			//echo $fid;
+			$q   = "select * from student_profile where s_id=$sid";
+			$rel  = mysql_query($q,$conn);
+			$q1    = "select * from class";
+			$rel1 = mysql_query($q1,$conn);
+			if(!$rel)
+				die('could not execute:'.mysql_error());
+			while( $data = mysql_fetch_array($rel) ) {
+				$cid   = $data['class_id'];
+				$q2    = "select * from class where class_id=$cid";
+				$rel2  = mysql_query($q2,$conn);
+				$data2 = mysql_fetch_array($rel2);
+				$student = array('sid'=>$data['s_id'],'fname'=>$data['first_name'],'lname'=>$data['last_name'],'roll'=>$data['roll_no'],'cid'=>$cid,'batch'=>$data2['batch'],'Section'=>$data2['section'],'Program'=>$data2['program'],'branch'=>$data2['branch']);
+				//print_r($faculty);
+			}
+			$i=0;
+			while ( $result2 = mysql_fetch_array($rel1) ) {
+				$student["class$i"] = array('Cid'=>$result2['class_id'],'Program'=>$result2['program'],'Branch'=>$result2['branch'],'Section'=>$result2['section'],'Batch'=>$result2['batch']);
+				$i++;
+			}
+			$view .= student_edit($student);
+			return $view;
+		}
+
+		function del_student() {
+			$fid   = $_POST['s_id'];
+			$conn  = dbconnect();
+			$quer  = "select u_id from student_profile where s_id=$fid";
+			$re    = mysql_query($quer,$conn);
+			$resul = mysql_fetch_array($re);
+			$query = "delete from student_profile where s_id=$fid";
+			$rel   = mysql_query($query,$conn);
+			$query2= "delete from login where u_id=$resul[0]";
+			$rel1  = mysql_query($query2,$conn);
+			header("Location: http://onlineexam.com/?manageStudent");
+		}
+
+		function save_student() {
+			$sid  = $_POST['sid'];
+			$roll = $_POST['roll'];
+			$cid  = $_POST['class'];
+			$conn  = dbconnect();
+			$query = "update student_profile set roll_no=$roll,class_id=$cid where s_id=$sid";
+			$rel   = mysql_query($query,$conn);
+			header("Location: http://onlineexam.com/?success");
+		}	
 
 		/* for success function */
 		function success() {

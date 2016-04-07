@@ -209,6 +209,171 @@ function subject_view($data) {
 							</div>';
 	return $content;
 }
+
+function m_faculty_view($data) {
+	$content = '<div class="midcon">
+								<div class="prof">
+								<form method="post" action="?editFaculty">
+									<select name="faculty_id">';
+	$i=0;
+	foreach ($data as $key => $value) {
+		$fid   = $data["$i"]['fid'];
+		$fname = $data["$i"]['fname'];
+		$lname = $data["$i"]['lname'];
+		$content .= '<option value="'.$fid.'">'.$fname." ".$lname.'</option>';	
+	$i++;
+	}
+	$content .= '</select>
+									 <input type="submit" value="Edit" name="edit"/>
+									 <input type="submit" value="Delete" name="delete"/>
+									 </form>
+									 </div></div>';
+	return $content;
+}
+
+
+function faculty_edit( $data ) {
+	$content = '<div class="midcon">
+								<div class="prof">
+									<table border="1">
+										<tbody>';
+		$fid   = $data['fid'];
+		$fname = $data['fname'];
+		$lname = $data['lname'];
+		$dept  = $data['dept'];
+		$post  = $data['post'];
+		$sal   = $data['sal'];
+		$content .= '	<form method="post" action="?saveFaculty">
+									<tr><td id="generalhead" colspan="2">Faculty info</td></tr>
+									<tr>
+										<td>Faculty ID</td>
+										<td><input id="nochange" type="text" readonly name="fid" value="'.$fid.'"/>
+									</tr>
+									<tr>
+										<td>First Name</td>
+										<td><input id="nochange" type="text" readonly name="fname" value="'.$fname.'"/>
+									</tr>
+									<tr>
+										<td>Last Name</td>
+										<td><input id="nochange" type="text" readonly name="lname" value="'.$lname.'"/>
+									</tr>
+									<tr>
+										<td>Department</td>
+										<td><input type="text" name="dept" value="'.$dept.'"/>
+									</tr>
+									<tr>
+										<td>Post</td>
+										<td><input type="text" name="Post" value="'.$post.'"/>
+									</tr>
+									<tr>
+										<td>Salary</td>
+										<td><input type="text" name="sal" value="'.$sal.'"/>
+									</tr>
+									<tr><td></td><td><input type="submit" value="save"/></td></tr>
+									</form>';
+	$content .= '</tbody></table></div>
+								</div>';
+	return $content;
+}
+
+
+function m_student_view($data) {
+	$content = '<div class="midcon">
+								<div class="prof">
+								<form method="post" action="?editStudent">
+									<select name="s_id">';
+	$i=0;
+	foreach ($data as $key => $value) {
+		$sid   = $data["$i"]['sid'];
+		$fname = $data["$i"]['fname'];
+		$lname = $data["$i"]['lname'];
+		$roll  = $data["$i"]['roll'];
+		$content .= '<option value="'.$sid.'">'.$fname." ".$lname." (roll no-- ".$roll.")".'</option>';	
+	$i++;
+	}
+	$content .= '</select>
+									 <input type="submit" value="Edit" name="edit"/>
+									 <input type="submit" value="Delete" name="delete"/>
+									 </form>
+									 </div></div>';
+	return $content;
+}
+
+
+function student_edit( $data ) {
+	$content = '<div class="midcon">
+								<div class="prof">
+									<table border="1">
+										<tbody>';
+		$sid   = $data['sid'];
+		$fname = $data['fname'];
+		$lname = $data['lname'];
+		$roll  = $data['roll'];
+		$cid   = $data['cid'];
+		$prog  = $data['Program'];
+		$batch = $data['batch'];
+		$brnch = $data['branch'];
+		$sec   = $data['Section'];
+		$content .= '	<form method="post" action="?saveStudent">
+									<tr><td id="generalhead" colspan="2">Student info</td></tr>
+									<tr>
+										<td>Student ID</td>
+										<td><input id="nochange" type="text" readonly name="sid" value="'.$sid.'"/></td>
+									</tr>
+									<tr>
+										<td>First Name</td>
+										<td><input id="nochange" type="text" readonly name="fname" value="'.$fname.'"/>
+									</tr>
+									<tr>
+										<td>Last Name</td>
+										<td><input id="nochange" type="text" readonly name="lname" value="'.$lname.'"/>
+									</tr>
+									<tr>
+										<td>Roll No</td>
+										<td><input type="text" name="roll" value="'.$roll.'"/>
+									</tr>
+									<tr>
+										<td>Class</td>
+										<td id="tsel"><input id="nochange" type="text" readonly value="'.$cid.'"/>
+												<input id="nochange" type="text" readonly value="'.$prog.'"/>
+												<input id="nochange" type="text" readonly value="'.$brnch.'"/>
+												<input id="nochange" type="text" readonly value="'.$sec.'"/>
+												<input id="nochange" type="text" readonly value="'.$batch.'"/>
+										</td>
+										<tr><td>Change class</td><td><select name="class">
+										';
+			$i = 0;
+			$j = 0;
+			//print_r($data);
+			foreach($data as $key=>$value) {
+				
+				//echo $i;
+				if ($i >=9) {
+					$id = $data["class$j"]['Cid'];
+					$pr = $data["class$j"]['Program'];
+					$br = $data["class$j"]['Branch'];
+					$ba = $data["class$j"]['Batch'];
+					$se = $data["class$j"]['Section'];
+					if ($cid==$id) {
+						$content .= '<option value="'.$id.'" selected>'.$pr."-".$br."-".$se."-".$ba.'</option>';
+	          $j++;
+        	}else {
+        		$content .= '<option value="'.$id.'">'.$pr."-".$br."-".$se."-".$ba.'</option>';
+         		$j++;
+        	}
+        }
+      $i++;
+      }
+      $content .=	'</select></td></tr>
+									</tr>
+									<tr><td></td><td><input type="submit" value="save"/></td></tr>
+									</form>';
+	$content .= '</tbody></table></div>
+								</div>';
+	return $content;
+}
+
+
 /*
 ** general views
 */
