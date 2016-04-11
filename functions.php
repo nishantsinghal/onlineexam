@@ -1,121 +1,203 @@
 <?php
 /**
-** Contains all functionality
-**/
+ * Contains all functionality
+ */
 require('connection.php');
 
 session_start();
+$baseurl = $_SERVER['SERVER_NAME'];
 
 //for title header part
-	function head() {
-		$head     = 'Online Exam Portal';
-		$showhead = head_view($head);
-		return $showhead;
+function head() {
+  $head     = 'Online Exam Portal';
+	$showhead = head_view($head);
+	
+	return $showhead;
+}
+
+
+//for main_content
+function main_content() {
+	if ($_SERVER["QUERY_STRING"] == '')
+		return login_view();
+	
+	elseif ($_SERVER["QUERY_STRING"] == 'login') {
+		return login_check();
+	}
+	
+	elseif ($_SERVER["QUERY_STRING"] == 'user') {
+		return profile();
+	}
+	
+	elseif ($_SERVER["QUERY_STRING"] == 'editProfile') {
+		return edit_profile();
+	}
+	
+	elseif ($_SERVER["QUERY_STRING"] == 'saveProfile') {
+		return save_profile();
+	}
+	
+	elseif ($_SERVER["QUERY_STRING"] == 'success') {
+		return success();
 	}
 
-
-	//for main_content
-		function main_content() {
-			if ($_SERVER["QUERY_STRING"] == '')
-				return login_view();
-			elseif ($_SERVER["QUERY_STRING"] == 'login') {
-				return login_check();
-			}elseif ($_SERVER["QUERY_STRING"] == 'user') {
-				return profile();
-			}elseif ($_SERVER["QUERY_STRING"] == 'editProfile') {
-				return edit_profile();
-			}elseif ($_SERVER["QUERY_STRING"] == 'saveProfile') {
-				return save_profile();
-			}elseif ($_SERVER["QUERY_STRING"] == 'addRole') {
-				return add_role();
-			}elseif ($_SERVER["QUERY_STRING"] == 'delRole') {
-				return del_role();
-			}elseif ($_SERVER["QUERY_STRING"] == 'saveRole') {
-				return save_role();
-			}elseif ($_SERVER["QUERY_STRING"] == 'success') {
-				return success();
-			}elseif ($_SERVER["QUERY_STRING"] == 'addUser') {
-				return add_user();
-			}elseif ($_SERVER["QUERY_STRING"] == 'saveUser') {
-				return save_user();
-			}elseif ($_SERVER["QUERY_STRING"] == 'submitUser') {
-				return submit_user();
-			}elseif ($_SERVER["QUERY_STRING"] == 'manageSubject') {
-				return manage_subject();
-			}elseif ($_SERVER["QUERY_STRING"] == 'delSubject') {
-				return delete_subject();
-			}elseif ($_SERVER["QUERY_STRING"] == 'saveSubject') {
-				return add_subject();
-			}elseif ($_SERVER["QUERY_STRING"] == 'manageFaculty') {
-				return manage_faculty();
-			}elseif ($_SERVER["QUERY_STRING"] == 'editFaculty') {
-				if ( isset($_POST['edit'])) {
-					return edit_faculty();
-				}elseif ( isset($_POST['delete'])) {
-					return del_faculty();
-				}
-			}elseif ($_SERVER["QUERY_STRING"] == 'saveFaculty') {
-				return save_faculty();
-			}elseif ($_SERVER["QUERY_STRING"] == 'manageStudent') {
-				return manage_student();
-			}elseif ($_SERVER["QUERY_STRING"] == 'editStudent') {
-				if ( isset($_POST['edit'])) {
-					return edit_student();
-				}elseif ( isset($_POST['delete'])) {
-					return del_student();
-				}
-			}elseif ($_SERVER["QUERY_STRING"] == 'saveStudent') {
-				return save_student();
-			}
+	if ($_SESSION['ROLE'] == 1) {
+		switch ($_SERVER["QUERY_STRING"]) {
+		  case "addRole":
+			  return add_role();
+			  break;
+		  
+		  case "delRole":
+			  return del_role();
+			  break;
+		  
+		  case "saveRole":
+			  return save_role();
+			  break;
+		  
+		  case "addUser":
+			  return add_user();
+			  break;
+		  
+		  case "saveUser":
+		    return save_user();
+		    break;
+		  
+		  case "submitUser":
+			  return submit_user();
+			  break;
+		  
+		  case "manageSubject":
+			  return manage_subject();
+			  break;
+		  
+		  case "delSubject":
+			  return delete_subject();
+			  break;
+		  
+		  case "saveSubject":
+			  return add_subject();
+			  break;
+		  
+		  case "manageFaculty":
+			  return manage_faculty();
+			  break;
+		  
+		  case "editFaculty":
+			  if ( isset($_POST['edit'])) {
+				  return edit_faculty();
+			  }
+			  
+			  elseif ( isset($_POST['delete'])) {
+				  return del_faculty();
+			  }
+			  break;
+		  
+		  case "saveFaculty":
+			  return save_faculty();
+			  break;
+		  
+		  case "manageStudent":
+		    return manage_student();
+		    break;
+		  
+		  case "editStudent":
+			  if ( isset($_POST['edit'])) {
+				  return edit_student();
+			  }
+			  
+			  elseif ( isset($_POST['delete'])) {
+				  return del_student();
+			  }
+			  break;
+	    
+	    case "saveStudent":
+			  return save_student();
+			  break;
 		}
-
-	//for footer part
-		function footer() {
-
-		}	
-
-	//for login checking
-		function login_check() {
-			//echo "in login_check";
-			$user = $_POST['username'];
-			$pass = $_POST['password'];
-			if ( isset($_POST['username']) ) {	
-				$conn  = dbconnect();
-				$line  = "select * from login where username='$user'";
-				$query = mysql_query($line,$conn);
-				if ( !$query ) {
-					die('Could not get data: ' . mysql_error());
-				}
-				$details = mysql_fetch_array($query);
-				$pass1   = $details['password'];
-				$u_id    = $details['u_id'];
-				$role    = $details['r_id'];
-				// echo "{$details['password']} is with $pass also $pass1";
-					if ( $pass == $pass1 ) {
-						$_SESSION['USERNAME'] = $user;
-						$_SESSION['PASSWORD'] = $pass;
-						$_SESSION['ROLE']     = $role;
-						$_SESSION['UID']      = $u_id;
-						 header("Location: http://onlineexam.com/?user");
-						//return profile();
-					}else
-						return fail_page();
-			}else {
-				die("could not connet fo avaliable data:".mysql_error());
-			}
+	}
+	
+	if ($_SESSION['ROLE'] == 2) {
+		switch ($_SERVER["QUERY_STRING"]) {
+		  case "createQB":
+			  return createQB();
+			  break;
 			
+			case "createQB1":
+			  return createQB1();
+			  break;
+			
+			case "saveQB":
+			  return saveQB();
+			  break;
+			
+			case "createTest":
+			  return create_test();
+			  break;
+			
+			case "createTest1":
+			  return create_test1();
+			  break;
+			
+			case "saveTest":
+			  return save_test();
+			  break;
 		}
+	}
+}
+
+//for footer part
+function footer() {
+
+}	
+
+//for login checking
+function login_check() {
+	//echo "in login_check";
+	$user = $_POST['username'];
+	$pass = $_POST['password'];
+	if ( isset($_POST['username']) ) {	
+		$conn  = dbconnect();
+		$line  = "select * from login where username='$user'";
+		$query = mysql_query($line,$conn);
+		if ( !$query ) {
+			die('Could not get data: ' . mysql_error());
+		}
+		$details = mysql_fetch_array($query);
+		$pass1   = $details['password'];
+		$u_id    = $details['u_id'];
+		$role    = $details['r_id'];
+		// echo "{$details['password']} is with $pass also $pass1";
+			if ( $pass == $pass1 ) {
+				$_SESSION['USERNAME'] = $user;
+				$_SESSION['PASSWORD'] = $pass;
+				$_SESSION['ROLE']     = $role;
+				$_SESSION['UID']      = $u_id;
+				 header("Location: http://".$GLOBALS['baseurl']."/?user");
+				//return profile();
+			}else
+				return fail_page();
+	}else {
+		die("could not connet fo avaliable data:".mysql_error());
+	}
+	
+}
 		// if( isset($_POST['submit']) )
 		// 	login_check();
 
 		
 
 
-		/* for profile function */
+		/** 
+		 * Profile function
+		 * This function provides profile details.
+		 */
+
 		function profile() {
 			$view = tree_view();
 			$conn = dbconnect();
 			$uid = $_SESSION['UID'];
+			//Chosse
 			if ($_SESSION['ROLE'] == 1) {
 				$query = "select * from admin_profile where u_id=$uid";
 				$rel   = mysql_query($query,$conn);
@@ -123,6 +205,7 @@ session_start();
 					die('could not get admin data:'.mysql_error());
 				}
 				$result = mysql_fetch_array($rel);
+				$_SESSION['adminID'] = $result['a_id'];
 				$profile_var = array('First Name'=>$result['first_name'],'Last Name'=>$result['last_name']);
 				$_SESSION['PROFILE'] = $profile_var;
 				$view .= midcontent_profview($profile_var);
@@ -134,6 +217,7 @@ session_start();
 					die('could not get faculty data:'.mysql_error());
 				}
 				$result = mysql_fetch_array($rel);
+				$_SESSION['facultyID'] = $result['f_id'];
 				$profile_var = array('First Name'=>$result['first_name'],'Last Name'=>$result['last_name'],'Salary'=>$result['salary'],'Department'=>$result['department'],'Post'=>$result['post']);
 				$_SESSION['PROFILE'] = $profile_var;
 				$view .= midcontent_profview($profile_var);
@@ -145,6 +229,7 @@ session_start();
 					die('could not get faculty data:'.mysql_error());
 				}
 				$result = mysql_fetch_array($rel);
+				$_SESSION['studentID'] = $result['s_id'];
 				$cid = $result['class_id'];
 				$_SESSION['CID'] = $cid;
 				$query1 = "select * from class where class_id=$cid";
@@ -180,7 +265,7 @@ session_start();
 				if (!$rel) {
 					die('could not get admin data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?user");
+				header("Location: http://".$GLOBALS['baseurl']."/?user");
 			}
 			if ($_SESSION['ROLE'] == 2) {
 				$fname = $_POST['First_Name'];
@@ -193,7 +278,7 @@ session_start();
 				if (!$rel) {
 					die('could not get admin data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?user");
+				header("Location: http://".$GLOBALS['baseurl']."/?user");
 				
 			}
 			if ($_SESSION['ROLE'] == 3) {
@@ -212,7 +297,7 @@ session_start();
 				if (!$rel || !$rel1) {
 					die('could not get admin data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?user");
+				header("Location: http://".$GLOBALS['baseurl']."/?user");
 				
 			}
 
@@ -222,6 +307,7 @@ session_start();
 		
 
 
+	/**  ADMIN  FUNCTIONALITY   **/
 
 		/********************* for role addition **********************/
 		function add_role() {
@@ -244,7 +330,7 @@ session_start();
 			echo $rid;
 			$query = "delete from role where r_id='$rid'";
 			$rel   = mysql_query($query,$conn);
-			header("Location: http://onlineexam.com/?addRole");
+			header("Location: http://".$GLOBALS['baseurl']."/?addRole");
 		}
 
 		function save_role() {
@@ -266,7 +352,7 @@ session_start();
 				if (!$rel1) {
 					die('could not insert data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?addRole");
+				header("Location: http://".$GLOBALS['baseurl']."/?addRole");
 			}else {
 				return fail_view();
 			}
@@ -348,7 +434,7 @@ session_start();
 				if (!$rel2) {
 					die('could not get admin data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?success");
+				header("Location: http://".$GLOBALS['baseurl']."/?success");
 			}
 			if ($_SESSION['newrole'] == 2) {
 				$fname = $_POST['First_Name'];
@@ -361,7 +447,7 @@ session_start();
 				if (!$rel2) {
 					die('could not get admin data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?success");
+				header("Location: http://".$GLOBALS['baseurl']."/?success");
 				
 			}
 			if ($_SESSION['newrole'] == 3) {
@@ -374,7 +460,7 @@ session_start();
 				if (!$rel || !$rel1) {
 					die('could not get admin data:'.mysql_error());
 				}
-				header("Location: http://onlineexam.com/?success");
+				header("Location: http://".$GLOBALS['baseurl']."/?success");
 			}
 		}
 
@@ -403,7 +489,7 @@ session_start();
 			echo $subid;
 			$query = "delete from subject where sub_id=$subid";
 			$rel   = mysql_query($query,$conn);
-			header("Location: http://onlineexam.com/?manageSubject");
+			header("Location: http://".$GLOBALS['baseurl']."/?manageSubject");
 		}
 
 		function add_subject() {
@@ -414,7 +500,7 @@ session_start();
 			$rel  = mysql_query($q1,$conn);
 			if(!$rel)
 				die('could not execute:'.mysql_error());
-			header("Location: http://onlineexam.com/?manageSubject");
+			header("Location: http://".$GLOBALS['baseurl']."/?manageSubject");
 		}
 
 
@@ -465,7 +551,7 @@ session_start();
 			$rel   = mysql_query($query,$conn);
 			$query2= "delete from login where u_id=$resul[0]";
 			$rel1  = mysql_query($query2,$conn);
-			header("Location: http://onlineexam.com/?manageFaculty");
+			header("Location: http://".$GLOBALS['baseurl']."/?manageFaculty");
 		}
 
 		function save_faculty() {
@@ -476,7 +562,7 @@ session_start();
 			$conn  = dbconnect();
 			$query = "update faculty_profile set department='$dept',post='$post',salary=$sal where f_id=$fid";
 			$rel   = mysql_query($query,$conn);
-			header("Location: http://onlineexam.com/?success");
+			header("Location: http://".$GLOBALS['baseurl']."/?success");
 		}
 
 
@@ -537,7 +623,7 @@ session_start();
 			$rel   = mysql_query($query,$conn);
 			$query2= "delete from login where u_id=$resul[0]";
 			$rel1  = mysql_query($query2,$conn);
-			header("Location: http://onlineexam.com/?manageStudent");
+			header("Location: http://".$GLOBALS['baseurl']."/?manageStudent");
 		}
 
 		function save_student() {
@@ -547,8 +633,135 @@ session_start();
 			$conn  = dbconnect();
 			$query = "update student_profile set roll_no=$roll,class_id=$cid where s_id=$sid";
 			$rel   = mysql_query($query,$conn);
-			header("Location: http://onlineexam.com/?success");
-		}	
+			header("Location: http://".$GLOBALS['baseurl']."/?success");
+		}
+
+
+	/**  END OF ADMIN FUNCTIONALITY **/
+
+
+	/**  FACULTY FUNCTIONALITY      **/
+
+	  /****************** Create Question Bank *******************/
+
+	  function createQB() {
+	  	$view  = tree_view();
+	  	$conn  = dbconnect();
+			$quer  = "select * from subject";
+			$re    = mysql_query($quer,$conn);
+			$i     = 0;
+			while($resul = mysql_fetch_array($re)){
+				$subject["$i"] = array('subid'=>$resul['sub_id'],'subname'=>$resul['sub_name'],'subcode'=>$resul['sub_code']);
+				$i++;
+			}
+	  	$view .= QB_view($subject);
+	  	return $view;
+	  }
+
+	  function createQB1() {
+	  	$view  = tree_view();
+	  	$conn  = dbconnect();
+	  	$subid = $_POST['sub_id'];
+	  	$fid   = $_SESSION['facultyID'];
+			$quer  = "select * from subject where sub_id = $subid";
+			$re    = mysql_query($quer,$conn);
+			$resul = mysql_fetch_array($re);
+			$quer1  = "select * from level";
+			$re1    = mysql_query($quer1,$conn);
+			$qb    = array('subid'=>$resul['sub_id'],'subname'=>$resul['sub_name'],'subcode'=>$resul['sub_code'],'facultyID'=>$fid);
+			$i = 0;
+			while($resul1 = mysql_fetch_array($re1)) {
+				$qb["level$i"] = array('lid'=>$resul1['l_id'],'level'=>$resul1['level']);
+				$i++;
+			}	 
+	  	$view .= QB_view1($qb);
+	  	return $view;
+	  }
+
+	  function saveQB() {
+	  	$subid = $_POST['subid'];
+	  	$facid = $_POST['facid'];
+	  	$ques  = $_POST['qcontent'];
+	  	$opA   = $_POST['opA'];
+	  	$opB   = $_POST['opB'];
+	  	$opC   = $_POST['opC'];
+	  	$opD   = $_POST['opD'];
+	  	$corr  = strtoupper($_POST['correct']);
+	  	$marks = $_POST['marks'];
+	  	$qtype = $_POST['lid'];
+	  	echo $subid." ".$facid." ".$ques." ".$opA." ".$opB." ".$opC." ".$opD." ".$corr." type ".$qtype ; 
+	  	$view  = tree_view();
+	  	$conn  = dbconnect();
+	  	$quer  = "insert into QB(question,marks,c_A,c_B,c_C,c_D,correct,l_id,f_id,sub_id) values ('$ques',$marks,'$opA','$opB','$opC','$opD','$corr',$qtype,$facid,$subid)";
+			$re    = mysql_query($quer,$conn);
+			if(!$re)
+			 echo "problem";	
+			header("Location: http://".$GLOBALS['baseurl']."/?createQB");	
+	  }
+
+
+	  /****************** Create Test *******************/
+
+	  function create_test() {
+      $view  = tree_view();
+	  	$conn  = dbconnect();
+			$quer  = "select Distinct sub_id from QB";
+			$re    = mysql_query($quer,$conn);
+			$i     = 0;
+			while($resul = mysql_fetch_array($re)){
+				$subid  = $resul['sub_id'];
+				$quer1  = "select * from subject where sub_id=$subid";
+				$re1    = mysql_query($quer1,$conn);
+				$resul1 = mysql_fetch_array($re1);
+				$subject["$i"] = array('subid'=>$subid,'subname'=>$resul1['sub_name'],'subcode'=>$resul1['sub_code']);
+				$i++;
+			}
+	  	$view .= createtest_view($subject);
+	  	return $view;
+	  }
+	  
+	  function create_test1() {
+	  	$view  = tree_view();
+	  	$conn  = dbconnect();
+	  	$subid = $_POST['sub_id'];
+			$quer  = "select * from QB where sub_id=$subid";
+			$re    = mysql_query($quer,$conn);
+			$i     = 0;
+			while($resul = mysql_fetch_array($re)){
+				$ques["$i"] = array('subid'=>$resul['sub_id'],'qbid'=>$resul['qb_id'],'question'=>$resul['question'],'marks'=>$resul['marks'],'level'=>$resul['level']);
+				$i++;
+			}
+	  	$view .= createtest_view1($ques);
+	  	return $view;
+	  }
+
+
+	  function save_test() {
+	  	$view  = tree_view();
+	  	$conn  = dbconnect();
+	  	$subid = $_POST['subid'];
+	  	$facid = $_SESSION['facultyID'];
+	  	$cdate = date("Y-m-d H:i:s");
+	  	$quer  = "insert into test_schedule(f_id,sub_id,c_date) values ($facid,$subid,'$cdate')";
+			$re    = mysql_query($quer,$conn);
+			if(!$re)
+			 echo "problem1";	
+			$quer1 = "select tid from test_schedule where f_id=$facid and sub_id=$subid order by tid desc
+								limit 1";
+			$re1   = mysql_query($quer1);
+			$resul = mysql_fetch_array($re1);
+			if(!empty($_POST['check_list'])) {
+   	    foreach($_POST['check_list'] as $check) {
+   	    		$quer  = "insert into paper(tid,qb_id) values ($resul[0],$check)";
+						$re    = mysql_query($quer,$conn);
+						if(!$re)
+			 				echo "problem2";
+            echo $check;
+        }
+      }
+			header("Location: http://".$GLOBALS['baseurl']."/?success");	
+	  }
+
 
 		/* for success function */
 		function success() {

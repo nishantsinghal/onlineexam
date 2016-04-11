@@ -4,6 +4,7 @@
 */
 //session_start(); 
 
+//echo $_SERVER['SERVER_NAME'];
 function head_view($data) {
 	$mainHead = '<div class="nav">
 								<h1>Welcome to '.$data.'</h1>
@@ -370,6 +371,162 @@ function student_edit( $data ) {
 									</form>';
 	$content .= '</tbody></table></div>
 								</div>';
+	return $content;
+}
+
+
+
+function QB_view($data) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<form method="post" action="?createQB1">
+										<select name="sub_id">';
+	$i=0;
+	foreach ($data as $key => $value) {
+		$subid   = $data["$i"]['subid'];
+		$subname = $data["$i"]['subname'];
+		$subcode = $data["$i"]['subcode'];
+		$content .= '<option value="'.$subid.'">'.$subname." (sub code -- ".$subcode.")".'</option>';	
+	$i++;
+	}
+	$content .= '</select>
+									 <input type="submit" value="create" name="create"/>
+									 </form>
+									 </div></div>';
+	return $content;
+}
+
+function QB_view1($data) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<form method="post" action="?saveQB">';
+		$subid   = $data['subid'];
+		$subname = $data['subname'];
+		$subcode = $data['subcode'];
+		$facID   = $data['facultyID'];
+		$content .= '<table>
+									<tbody>
+									<tr>
+									<td>Subject ID</td>
+									<td id="nochange"><input type="text" readonly value="'.$subid.'" name="subid"/></td>
+		              </tr>
+		              <tr>
+		              <td>Subject Code</td>
+		              <td id="nochange"><input type="text" readonly value="'.$subcode.'" name="subcode"/></td>
+		              </tr>
+		              <tr>
+		              <td>Subject Name</td>
+		              <td id="nochange"><input type="text" readonly value="'.$subname.'" name="subname"/></td>
+		              </tr>
+		              <tr>
+		              <td>Faculty ID</td>
+		              <td id="nochange"><input type="text" readonly value="'.$facID.'" name="facid"/></td>
+		              </tr>
+		              <tr>
+		              <td colspan=2><textarea rows="4" cols="50" name="qcontent" placeholder="Enter ur question here....."></textarea></td>
+		              </tr>
+		              <tr>
+		              <td>Question Marks</td>
+		              <td><input type="text" name="marks"/></td>
+		              </tr>
+		              <tr>
+		              <td>Option A</td>
+		              <td><input type="text" name="opA"/></td>
+		              </tr>
+		             <tr>
+		              <td>Option B</td>
+		              <td><input type="text" name="opB"/></td>
+		              </tr>
+		              <tr>
+		              <td>Option C</td>
+		              <td><input type="text" name="opC"/></td>
+		              </tr>
+		              <tr>
+		              <td>Option D</td>
+		              <td><input type="text" name="opD"/></td>
+		              </tr>
+		              <tr>
+		              <td>Correct Option</td>
+		              <td><input type="text" name="correct"/></td>
+		              </tr>
+		              <tr>
+		              <td>Question Type</td>
+		              <td><select name=lid>';
+		$i = 0;
+		$j = 0;
+		foreach ($data as $key => $value) {
+			if ($i > 3) {
+				$lid      = $data["level$j"]['lid'];
+				$level    = $data["level$j"]['level'];
+				$content .= '<option value="'.$lid.'">'.$level.'</option>';
+				$j++;
+			}
+			$i++;
+		}
+		$content .='</select></td>
+		              </tr>
+		              <tr>
+		              <td></td><td><input type="submit" value="create" name="create"/></td>
+		              </tr>
+		              </tbody>
+		              </table>
+								 </form>
+								 </div></div>';
+	return $content;
+}
+
+
+function createtest_view($data) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<form method="post" action="?createTest1">
+										<select name="sub_id">';
+	$i=0;
+	foreach ($data as $key => $value) {
+		$subid   = $data["$i"]['subid'];
+		$subname = $data["$i"]['subname'];
+		$subcode = $data["$i"]['subcode'];
+		$content .= '<option value="'.$subid.'">'.$subname." (sub code -- ".$subcode.")".'</option>';	
+	$i++;
+	}
+	$content .= '</select>
+									 <input type="submit" value="create" name="create"/>
+									 </form>
+									 </div></div>';
+	return $content;
+}
+
+
+function createtest_view1($data) {
+	$i = 0;
+	$subid = $data["$i"]['subid'];
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<form method="post" action="?saveTest">
+										<table border=1><tbody>
+										<tr>
+										<td><input type="text" value="'.$subid.'" name="subid"/></td>
+										<td>Question</td>
+										<td>Marks</td>
+										<td>Level of Hardness</td>';
+	
+	foreach ($data as $key => $value) {
+		$qbid  = $data["$i"]['qbid'];
+		$ques  = $data["$i"]['question'];
+		$marks = $data["$i"]['marks'];
+		$level = $data["$i"]['level'];
+		$content .= '<tr>
+									<td><input type="checkbox" name="check_list[]" value="'.$qbid.'"></td>
+									<td><textarea rows=4 cols=50 readonly name="ques" >'.$ques.'</textarea></td>
+									<td>'.$marks.'</td>
+									<td>'.$level.'</td>
+								</tr>';	
+	$i++;
+	}
+	$content .= '	 <tr><td></td><td><input type="submit" value="create" name="create"/></td></tr>
+									</tbody></table>
+									 </form>
+									 </div></div>';
 	return $content;
 }
 
