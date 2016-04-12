@@ -447,7 +447,14 @@ function QB_view1($data) {
 		              </tr>
 		              <tr>
 		              <td>Correct Option</td>
-		              <td><input type="text" name="correct"/></td>
+		              <td>
+		              	<select name=correct>
+		              		<option type="text" value="A"/>A</option>
+		              		<option type="text" value="B"/>B</option>
+		              		<option type="text" value="C"/>C</option>
+		              		<option type="text" value="D"/>D</option>
+		              	</select>		
+		              </td>
 		              </tr>
 		              <tr>
 		              <td>Question Type</td>
@@ -530,6 +537,124 @@ function createtest_view1($data) {
 	return $content;
 }
 
+
+/**
+ * All views of test given by student
+ */
+
+function givetest_view($data) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<form method="post" action="?giveExam1">
+										<select name="test_id">';
+	$i=0;
+	foreach ($data as $key => $value) {
+		$testid  = $data["$i"]['tid'];
+		$subname = $data["$i"]['subname'];
+		$subcode = $data["$i"]['subcode'];
+		$faculty = $data["$i"]['faculty'];
+		$date    = $data["$i"]['date'];
+		$content .= '<option value="'.$testid.'">'.$subname." (sub code -- ".$subcode.") by ".$faculty." on ".$date.'</option>';	
+	$i++;
+	}
+	$content .= '</select>
+									 <input type="submit" value="Start Exam" name="start"/>
+									 </form>
+									 </div></div>';
+	return $content;
+}
+
+function givetest_view1($data) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<form method="post" action="?saveExam">
+	              	<table border=1>
+	              	<tbody>';
+	$i=0;
+	foreach ($data as $key => $value) {
+		$ques    = $data["$i"]['question'];
+		$marks   = $data["$i"]['marks'];
+		$cA      = $data["$i"]['cA'];
+		$cB      = $data["$i"]['cB'];
+		$cC      = $data["$i"]['cC'];
+		$cD      = $data["$i"]['cD'];
+		$corr    = $data["$i"]['correct'];
+		$pid     = $data["$i"]['pqid'];
+		$q       = $i+1;
+		$tid     = $data["$i"]['tid'];
+		$content .= '<tr>
+								<td>'."ques no".$q.'</td>
+								<td colspan=2>'.$ques.'</td>
+								</tr>
+								<tr>
+								<td><input hidden readonly name="paperid['.$i.']" value="'.$pid.'"/></td>
+								<td><input type="radio" name="option['.$i.']" value="A">'.$cA.'</td>
+								<td><input type="radio" name="option['.$i.']" value="B">'.$cB.'</td>
+		            </tr>
+		            <tr>
+		            <td><input hidden readonly name="tid" value="'.$tid.'"/></td>
+								<td><input type="radio" name="option['.$i.']" value="C">'.$cC.'</td>
+								<td><input type="radio" name="option['.$i.']" value="D">'.$cD.'</td>
+		            </tr>';	
+	$i++;
+	}
+	$content .= '<tr><td><input type="submit" value="Save" name="save"/></td></tr>
+								</tbody></table>
+									 </form>
+									 </div></div>';
+	return $content;
+}
+
+function result_view($data) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<table border=1>
+	              	<tbody>';
+	$j = 0;
+	$i = 0;
+	foreach ($data as $key => $value) {
+		if($j>0) {
+		$ques    = $data["$i"]['ques'];
+		$maxmark = $data["$i"]['maxmarks'];
+		$resp    = $data["$i"]['response'];
+		$corr    = $data["$i"]['correct'];
+		$mark    = $data["$i"]['urmark'];
+		$q       = $i+1;
+		$content .= '<tr>
+								<td>'."ques no".$q.'</td>
+								<td colspan=2>'.$ques.'</td>
+								</tr>
+								<tr>
+								<td></td>
+								<td>Your Answer</td>
+								<td>'.$resp.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Correct Answer</td>
+								<td>'.$corr.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Max Marks</td>
+								<td>'.$maxmark.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Marks Earned</td>
+								<td>'.$mark.'</td>
+		            </tr><br>';	
+		$i++;         
+		          }
+	$j++;
+	}
+	$total    = $data['total'];
+	$content .= '<tr><td>Total Marks</td><td>'.$total.'</td></tr>
+								</tbody></table>
+									 </form>
+									 </div></div>';
+	return $content;
+}
 
 /*
 ** general views
