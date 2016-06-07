@@ -6,12 +6,15 @@ require('connection.php');
 
 session_start();
 $baseurl = $_SERVER['SERVER_NAME'];
+if(!isset($_SESSION['USERNAME']) && $_SERVER["QUERY_STRING"] != ''){
+	header("Location: http://".$GLOBALS['baseurl']);
+} else{
 
+}
 //for title header part
 function head() {
   $head     = 'Online Exam Portal';
 	$showhead = head_view($head);
-	
 	return $showhead;
 }
 
@@ -40,7 +43,10 @@ function main_content() {
 	elseif ($_SERVER["QUERY_STRING"] == 'success') {
 		return success();
 	}
-
+	
+	elseif ($_SERVER["QUERY_STRING"] == 'logout') {
+		return logout();
+	}
 
 	// All Query String for admin 
 	if ($_SESSION['ROLE'] == 1) {
@@ -116,6 +122,9 @@ function main_content() {
 	    case "saveStudent":
 			  return save_student();
 			  break;
+
+			default :
+			   return access_denied();
 		}
 	}
 
@@ -146,6 +155,9 @@ function main_content() {
 			case "saveTest":
 			  return save_test();
 			  break;
+
+			default :
+			 return access_denied();
 		}
 	}
 
@@ -165,7 +177,16 @@ function main_content() {
 			  return save_exam();
 			  break;
 
-			
+			case "testEval":
+			  return test_evaluation();
+			  break;
+
+			case "testEvaluation1":
+			  return test_evaluation1();
+			  break;
+
+			default :
+			 return access_denied();
 			
 		}
 	}
@@ -194,6 +215,7 @@ function login_check() {
 		$role    = $details['r_id'];
 		// echo "{$details['password']} is with $pass also $pass1";
 			if ( $pass == $pass1 ) {
+				//session_start();
 				$_SESSION['USERNAME'] = $user;
 				$_SESSION['PASSWORD'] = $pass;
 				$_SESSION['ROLE']     = $role;
@@ -816,8 +838,10 @@ function save_profile() {
     $view  = tree_view();
   	$conn  = dbconnect();
   	$sid   = $_SESSION['studentID'];
+
   	//Query by which we can get all distinct testid and other relevant info
-		$quer  = "select Distinct s.sub_name,s.sub_code,f.first_name,t.tid,t.c_date from test_schedule t,subject s,faculty_profile f,paper p left outer join response r on r.pq_id=p.pq_id and r.s_id=$sid where r.pq_id is null and p.tid=t.tid and t.sub_id=s.sub_id and t.f_id=f.f_id";
+		// $quer  = "select Distinct s.sub_name,s.sub_code,f.first_name,t.tid,t.c_date from test_schedule t,subject s,faculty_profile f,paper p left outer join response r on r.pq_id=p.pq_id and r.s_id=$sid where r.pq_id is null and p.tid=t.tid and t.sub_id=s.sub_id and t.f_id=f.f_id";
+		$quer = "select Distinct s.sub_name,s.sub_code,f.first_name,t.tid,t.c_date from test_schedule t,subject s,faculty_profile f,paper p1 where p1.tid not in (select Distinct tid from paper p,response r where p.pq_id=r.pq_id and s_id=$sid) and p1.tid=t.tid and t.sub_id=s.sub_id and t.f_id=f.f_id";
 		$re    = mysql_query($quer,$conn);
 		$i     = 0;
 		while( $resul = mysql_fetch_array($re)){
@@ -831,15 +855,15 @@ function save_profile() {
   function give_exam1() {
   	$view  = tree_view();
   	$conn  = dbconnect();
-
   	$tid   = $_POST['test_id'];
 
   	//Query for show exam on select corresponding test.
-  	$query = "select * from QB q,paper p where p.qb_id=q.qb_id and p.tid=$tid"; 
+  	$query = "select * from QB q,paper p,level l where p.qb_id=q.qb_id and p.tid=$tid and l.l_id=q.l_id"; 
   	$re    = mysql_query($query,$conn);
 		$i     = 0;
-		while( $resul = mysql_fetch_array($re)){
-			$test["$i"] = array('tid'=>$resul['tid'],'question'=>$resul['question'],'marks'=>$resul['marks'],'cA'=>$resul['c_A'],'cB'=>$resul['c_B'],'cC'=>$resul['c_C'],'cD'=>$resul['c_D'],'correct'=>$resul['correct'],'pqid'=>$resul['pq_id']);
+		
+		while( $resul = mysql_fetch_array($re)) {
+			$test["$i"] = array('tid'=>$resul['tid'],'question'=>$resul['question'],'marks'=>$resul['marks'],'cA'=>$resul['c_A'],'cB'=>$resul['c_B'],'cC'=>$resul['c_C'],'cD'=>$resul['c_D'],'correct'=>$resul['correct'],'pqid'=>$resul['pq_id'],'level'=>$resul['level']);
 			$i++;
 		}
   	$view .= givetest_view1($test);
@@ -859,35 +883,113 @@ function save_profile() {
    	foreach($option as $op) {
    		$opt  = $op;
    		$pqid = $pid["$i"];
+   		if($opt!='0'){
   	  //Query by which we can save exam responce of student
 		  $quer = "insert into response (pq_id,s_id,resp) values($pqid,$sid,'$opt')";
 		  $re   = mysql_query($quer,$conn);
+		}
 		  $i++;
-	  }
+	}
 
-	  //Query to get correct reponse list and store result in table
-		$query = "select * from response r,paper p,QB q where q.qb_id=p.qb_id and r.pq_id=p.pq_id and p.tid=$tid and r.s_id=$sid";
+	  //Query to get correct reponse list in table
+		$query = "select * from response r,paper p,QB q,level l where q.qb_id=p.qb_id and r.pq_id=p.pq_id and p.tid=$tid and r.s_id=$sid and l.l_id=q.l_id";
   	$re    = mysql_query($query);
   	$j = 0;
   	$marks = 0;
+  	$total_marks = 0;
   	while($result = mysql_fetch_array($re)) {
   		$option  = $result['resp'];
   		$correct = $result['correct'];
   		if ( $option == $correct ) {
   			$marks += $result['marks'];
-  			$exam["$j"] = array('ques'=>$result['question'],'response'=>$result['resp'],'correct'=>$result['correct'],'maxmarks'=>$result['marks'],'urmark'=>$result['marks']); 
+  			$total_marks += $result['marks'];
+  			$exam["$j"] = array('ques'=>$result['question'],'response'=>$result['resp'],'correct'=>$result['correct'],'maxmarks'=>$result['marks'],'urmark'=>$result['marks'],'level'=>$result['level']); 
   		}
   		else {
-  			$exam["$j"] = array('ques'=>$result['question'],'response'=>$result['resp'],'correct'=>$result['correct'],'maxmarks'=>$result['marks'],'urmark'=>'0');
+  			$total_marks += $result['marks'];
+  			$exam["$j"] = array('ques'=>$result['question'],'response'=>$result['resp'],'correct'=>$result['correct'],'maxmarks'=>$result['marks'],'urmark'=>'0','level'=>$result['level']);
   		}
   		$j++;
   	}
-  	$exam['total'] = $marks;
+  	$exam['total']   = $marks;
+  	$exam['attempt'] = $j;
   	//print_r($exam);
-  	$view .= result_view($exam);
+
+  	//Query to get not attempted question
+		$query1 = " select * from QB q,level l,paper p where q.qb_id=p.qb_id and q.l_id=l.l_id and p.pq_id not in (select pq_id from response r where r.s_id=$sid) and p.tid=$tid";
+  	$re1    = mysql_query($query1);
+  	$j1 = 0;
+  	while($result1 = mysql_fetch_array($re1)) {
+  		$total_marks += $result1['marks'];
+  		$exam1["$j1"] = array('ques'=>$result1['question'],'response'=>'Not Answered','correct'=>$result1['correct'],'maxmarks'=>$result1['marks'],'urmark'=>'0','level'=>$result1['level']);
+  		$j1++;
+  	}
+  	$exam1['unattempt']   = $j1;
+  	$exam1['paper_total'] = $total_marks;
+  	$view .= result_view($exam,$exam1);
   	return $view;
   	//header("Location: http://".$GLOBALS['baseurl']."/?success");
   }
+
+  //for test evaluation by student
+  function test_evaluation() {
+  	$view  = tree_view();
+  	$conn  = dbconnect();
+  	$sid    = $_SESSION['studentID'];
+		$quer  = "select Distinct s.sub_name,s.sub_code,f.first_name,t.tid,t.c_date from test_schedule t,response r,paper p,subject s,faculty_profile f where r.s_id=$sid and r.pq_id=p.pq_id and p.tid=t.tid and s.sub_id=t.sub_id and f.f_id=t.f_id;";
+		$re    = mysql_query($quer,$conn);
+		$i     = 0;
+		while( $resul = mysql_fetch_array($re)){
+			$test["$i"] = array('tid'=>$resul['tid'],'subname'=>$resul['sub_name'],'subcode'=>$resul['sub_code'],'faculty'=>$resul['first_name'],'date'=>$resul['c_date']);
+			$i++;
+		}
+  	$view .= testeval_view($test);
+  	return $view;
+  } 
+
+  function test_evaluation1() {
+  	$view  = tree_view();
+  	$conn  = dbconnect();
+  	$tid   = $_POST['test_id'];
+  	$sid    = $_SESSION['studentID'];
+  	//Query to get correct reponse list in table
+		$query = "select * from response r,paper p,QB q,level l where q.qb_id=p.qb_id and r.pq_id=p.pq_id and p.tid=$tid and r.s_id=$sid and l.l_id=q.l_id";
+  	$re    = mysql_query($query);
+  	$j = 0;
+  	$marks = 0;
+  	$total_marks = 0;
+  	while($result = mysql_fetch_array($re)) {
+  		$option  = $result['resp'];
+  		$correct = $result['correct'];
+  		if ( $option == $correct ) {
+  			$marks += $result['marks'];
+  			$total_marks += $result['marks'];
+  			$exam["$j"] = array('ques'=>$result['question'],'response'=>$result['resp'],'correct'=>$result['correct'],'maxmarks'=>$result['marks'],'urmark'=>$result['marks'],'level'=>$result['level']); 
+  		}
+  		else {
+  			$total_marks += $result['marks'];
+  			$exam["$j"] = array('ques'=>$result['question'],'response'=>$result['resp'],'correct'=>$result['correct'],'maxmarks'=>$result['marks'],'urmark'=>'0','level'=>$result['level']);
+  		}
+  		$j++;
+  	}
+  	$exam['total']   = $marks;
+  	$exam['attempt'] = $j;
+  	//print_r($exam);
+
+  	//Query to get not attempted question
+		$query1 = " select * from QB q,level l,paper p where q.qb_id=p.qb_id and q.l_id=l.l_id and p.pq_id not in (select pq_id from response r where r.s_id=$sid) and p.tid=$tid";
+  	$re1    = mysql_query($query1);
+  	$j1 = 0;
+  	while($result1 = mysql_fetch_array($re1)) {
+  		$total_marks += $result1['marks'];
+  		$exam1["$j1"] = array('ques'=>$result1['question'],'response'=>'Not Answered','correct'=>$result1['correct'],'maxmarks'=>$result1['marks'],'urmark'=>'0','level'=>$result1['level']);
+  		$j1++;
+  	}
+  	$exam1['unattempt']   = $j1;
+  	$exam1['paper_total'] = $total_marks;
+  	$view .= result_view($exam,$exam1);
+  	return $view;
+  } 
 
 
 
@@ -899,5 +1001,17 @@ function success() {
 /* for failure function */
 function fail_page() {
 	return fail_view();
+}
+/* for logout function */
+function logout() {
+	session_unset();
+	session_destroy();
+	$view = logout_view();
+	return $view;
+}
+/* for access denied function */
+function access_denied() {
+	$view = accessdeny_view();
+	return $view;
 }
 ?>

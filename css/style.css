@@ -1,6 +1,10 @@
 body{
+	background-image: url("/img/a2.jpg");
+	background-position:center;
+	background-attachment: fixed;
 	margin:0;
 	padding:0;
+	font-family: verdana;
 }
 #container{
 	width: 100%;
@@ -9,7 +13,7 @@ body{
 .nav{
 	height:100px;
 	width: 100%;
-	background-color:#2196F3;
+	background-color: cadetblue;
 	text-align: center;
 	vertical-align: middle;
 	box-shadow: 0 1px 3px;
@@ -28,8 +32,8 @@ body{
 	margin-top: 50px;
     width: 400px;
     height: 300px;
-    
     border: 1px solid dodgerblue;
+    background-color: cadetblue;
     box-shadow: 0 5px 10px;
 }
 #uname{
@@ -48,7 +52,7 @@ body{
 #sbutton{
 	margin: 20px 0;
 	width: 50%;
-	background-color: green;
+	background-color: #BEE264;
 	padding: 10px;
 	border:1px solid green;
 
@@ -59,21 +63,37 @@ body{
 	cursor:pointer;
 }
 
+
 /*for profile*/
 .band{
-	background-color: wheat;
 	box-shadow: 0 0 20px;
 	padding: 10px;
 }
 .band h2{
 	margin: 0;
-	color:tomato;
+	color:dodgerblue;
+}
+.band a{
+	float:right;
+	text-decoration: none;
+	margin-right:10px;
+	margin-top: 4px;
+	font-size:18px;
+	color:dodgerblue;
+}
+.band span{
+	background-color:white;
+	padding:10px;
+	border-radius:10px;
 }
 .left{
 	display: inline-block;
-	width:200px;
-	height:500px;
-	background-color: green;
+	min-width:200px;
+	margin-top: 10px;
+	margin-left: 10px;
+	width: 20%;
+	height:auto;
+	background-color: #BEE264;
 }
 .left ul{
 	margin: 0;
@@ -88,12 +108,12 @@ body{
 	text-align: center;
 }
 .left ul li:hover {
-	background-color: dodgerblue;
+	background-color: cadetblue;
 	box-shadow: 0 0 20px;
 }
 .left ul li a {
 	text-decoration: none;
-	color:wheat;
+	color:black;
 	display: block;
 }
 .left ul li a:hover {
@@ -101,6 +121,7 @@ body{
 }
 .error{
 	display: inline-block;
+	color: red;
 }
 .error p{
 	color: red;
@@ -109,28 +130,105 @@ body{
 }
 .midcon {
 	display:inline-block;
+	width: 70%;
+	background-color: cadetblue;
 	vertical-align: top;
 	box-shadow: 0 0 10px;
 	margin: 10px 0 0 10px;
 }
 .prof {
-	border:1px solid red;
+	box-shadow: 0 0 20px;
 	margin:20px;
+	padding:20px;
+	background-color: white;
+	border-radius: 10px;
+}
+.prof h2{
+	color:cadetblue;
+	text-align: center;
+}
+form{
+	text-align: center;
+}
+table{
+	margin: auto;	
 }
 #tagname {
+	text-align: left;
 	display:inline-block;
+	padding: 4px;
+	width:120px;
 
 }
 #tagvalue {
 	display:inline-block;
+	color:green;
+	padding: 4px;
+}
+#dropdown {
+	color:dodgerblue;
+	padding: 4px;
+	border-radius: 1px;
+	background-color: white;
+}
+#editbutton {
+	background-color: white;
+	border: 1px dodgerblue solid;
+	font-size: 16px;
+	color:dodgerblue;
+	margin: 20px 0 0 0;
+	padding: 10px 50px;
+	cursor: pointer;
+}
+#editbutton:hover {
+	background-color: dodgerblue;
+	color:white;
+}
+#delbutton {
+	background-color: dodgerblue;
+	border: 1px dodgerblue solid;
+	font-size: 16px;
+	color:white;
+	padding: 5px 20px;
+	cursor: pointer;
+}
+#delbutton:hover {
+	background-color: white;
+	color:dodgerblue;
 }
 .roletable {
 	border:1px solid black;
+	padding: 10px;
 }
 #generalhead {
 	color:green;
 	text-align: center;
 }
 #nochange {
-	background-color: grey;
+	background-color: cadetblue;
+	color:white;
+	text-align: center;
+}
+.timer {
+	background-color: dodgerblue;
+	text-align: center;
+}
+@media only screen and (max-width: 750px) {
+	.left{
+		min-width:150px;
+		margin-top: 0;
+		margin-left: 0;
+		width: 100%;
+		height: auto;
+	}
+	.midcon{
+		width:90%;
+		margin: auto;
+		display: block;
+		margin-top: 20px;
+		padding: 10px;
+	}
+	.band a{
+		margin-right: 0;
+	}
 }

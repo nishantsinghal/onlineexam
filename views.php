@@ -2,7 +2,7 @@
 /*
 ** Defining all views	
 */
-//session_start(); 
+session_start(); 
 
 //echo $_SERVER['SERVER_NAME'];
 function head_view($data) {
@@ -12,6 +12,7 @@ function head_view($data) {
 	return $mainHead;
 }
 
+//View for login window
 function login_view() {
 	$content = '<marquee id="mar" direction="left">:::::----Please login to view details----:::::</marquee>
 							<center>
@@ -26,9 +27,12 @@ function login_view() {
 	return $content;
 }
 
+//View for left side tree
 function tree_view() {
-	$content = '<div class="band"><h2>Welcome '.$_SESSION['USERNAME'].'</h2></div>
+	$content = '<div class="band"><h2>Welcome '.$_SESSION['USERNAME'].'<a href="?logout"><span>Logout</span></a></h2></div>
 				<div class="left">';
+  
+  //Tree for admin
 	if ($_SESSION['ROLE'] == 1) {
 		$content .= '<ul>
 						<li><a href="?editProfile">Edit profile</a></li>
@@ -39,6 +43,8 @@ function tree_view() {
 						<li><a href="?manageStudent">Manage student</a></li>
 					</ul>';
 	}
+
+	//Tree for faculty
 	if ($_SESSION['ROLE'] == 2) {
 		$content .=  '<ul>
 						<li><a href="?editProfile">Edit profile</a></li>
@@ -46,11 +52,12 @@ function tree_view() {
 						<li><a href="?createQB">Create Question Bank</a></li>
 					</ul>';
 	}
+
+	//Tree for student
 	if ($_SESSION['ROLE'] == 3) {
 		$content .=  '<ul>
 						<li><a href="?editProfile">Edit profile</a></li>
 						<li><a href="?giveExam">Give Examination</a></li>
-						<li><a href="?viewResult">View Result</a></li>
 						<li><a href="?testEval">Test Evaluation</a></li>
 					</ul>';	
 	}
@@ -58,6 +65,7 @@ function tree_view() {
 	return $content;
 }
 
+//Profile view for loggedin role
 function midcontent_profview($data) {
 	$content = '<div class="midcon"><div class="prof">';
 	foreach ($data as $key => $value)
@@ -68,9 +76,11 @@ function midcontent_profview($data) {
 
 function midcontent_editview($data) {
 	$content = '<div class="midcon"><div class="prof"><form method="post" action="?saveProfile">';
-	foreach ($data as $key => $value)
-		$content .= '<label id="tagname">'.$key.'::</label><input type="text" id="tagvalue" value="'.$value.'" name="'.$key.'" /><br>';
-	$content .= '<input type="submit" value="save"/>';
+	foreach ($data as $key => $value) {
+		$class = str_replace(" ", "" , $key);
+		$content .= '<label id="tagname">'.$key.'::</label><input type="text" class="'.$class.'" id="tagvalue" value="'.$value.'" name="'.$key.'" /><br>';
+	}
+	$content .= '<input id="editbutton" type="submit" value="save"/>';
 	$content .= '</form></div></div>';
 	return $content;
 }
@@ -79,18 +89,17 @@ function role_view($data) {
 	$content = '<div class="midcon">
 								<div class="prof">
 									<div class="roletable">';
-	$content.= '<table border="1">
-								<tbody>
+	$content.= '<table>
+								<tbody style="text-align:center;">
 									<tr>
-										<td>Role id</td>
-										<td>Role</td>
+										<td>Roles already defined</td>
 									</tr>';
 		foreach($data as $key => $value) {
 				$content .= '<form method="post" action="?delRole">
 										<tr> 
-										<td><input type="text" readonly name="rid" value="'.$key.'"/></td>
-										<td><input type="text" readonly name="role" value="'.$value.'"/></td>
-										<td><input type="submit" value="Delete"/></td>
+										<input hidden type="text" readonly name="rid" value="'.$key.'"/>
+										<td><input id="nochange" type="text" readonly name="role" value="'.$value.'"/>
+										<input id="delbutton" type="submit" value="Delete"/></td>
 									 </tr>
 									 </form>';
 	}
@@ -98,7 +107,7 @@ function role_view($data) {
 									</table></div> <div class="roletable">
 									<form method="post" action="?saveRole">
 										<label id="tagname">Add Role</label><input type="text" name="role"/>
-										<input type="submit" value="Save"/>
+										<input id="editbutton" type="submit" value="Save"/>
 									</form></div>
 								</div>
 							</div>';
@@ -109,13 +118,13 @@ function adduserview($data) {
 	$content = '<div class="midcon">
 								<div class="prof">
 									<form method="post" action="?saveUser">
-										Username::<input type="text" name="uname"/><br>
-										Password::<input type="text" name="pass"/><br>
-										Select Role::<select name="role">';
+										<label id="tagname" >Username::</label><input type="text" name="uname"/><br>
+										<label id="tagname" >Password::</label><input type="text" name="pass"/><br>
+										<label id="tagname" >Select Role::</label><select id="dropdown" name="role">';
 										foreach($data as $key=>$value) {
 											$content .= '<option value="'.$key.'">'.$value.'</option>';
 										}
-							$content.='</select><br><input type="submit" value="save"/>
+							$content.='</select><br><input id="editbutton" type="submit" value="save"/>
 									</form>
 								</div>
 							</div>';
@@ -126,7 +135,7 @@ function create_profileview($data) {
 	$content = '<div class="midcon">
 								<div class="prof">
 									<form method="post" action="?submitUser">';
-	$content.= '<table border="1">
+	$content.= '<table>
 								<tbody>';
 	if($_SESSION['newrole'] == 3) {
 		$i=0;
@@ -141,7 +150,7 @@ function create_profileview($data) {
 		}
 		$content .= '<tr> 
 											<td><label>Select Class:</label></td>
-											<td><select name="class">';
+											<td><select id="dropdown" name="class">';
 		$j=0;
 		$k=0;
 		foreach	($data as $key => $value) {	
@@ -167,7 +176,7 @@ function create_profileview($data) {
 		}
 	}								
 	$content .= '</tbody>
-									</table><input type="submit" value="save" /></form>
+									</table><input id="delbutton" type="submit" value="save" /></form>
 								</div>
 							</div>';
 	return $content;
@@ -177,12 +186,10 @@ function subject_view($data) {
 	$content = '<div class="midcon">
 								<div class="prof">
 									<div class="roletable">';
-	$content.= '<table border="1">
-								<tbody>
+	$content.= '<table>
+								<tbody style="text-align:center;">
 									<tr>
-										<td>Subject ID</td>
-										<td>Subject Name</td>
-										<td>Subject Code</td>
+										<td>Subject Name(code)</td>
 									</tr>';
 		$k = 0;
 		foreach($data as $key => $value) {
@@ -191,21 +198,20 @@ function subject_view($data) {
 				$scode = $data["subject$k"]['scode'];
 				$content .= '<form method="post" action="?delSubject">
 										<tr> 
-										<td><input type="text" readonly name="sid" value="'.$sid.'"/></td>
-										<td><input type="text" readonly name="sname" value="'.$sname.'"/></td>
-										<td><input type="text" readonly name="s" value="'.$scode.'"/></td>
-										<td><input type="submit" value="Delete"/></td>
+										<input hidden type="text" readonly name="sid" value="'.$sid.'"/>
+										<td><input id="nochange" type="text" readonly name="sname" value="'.$sname.'( '.$scode.' )"/>
+										<input id="delbutton" type="submit" value="Delete"/></td>
 									 </tr>
 									 </form>';
 	$k++;
 	}
 	$content.= '<form method="post" action="?saveSubject">
 										<tr>
-										<td><label id="tagname">Add Subject</label></td>
-										<td><input type="text" name="subname"/></td>
-										<td><input type="text" name="subcode"/></td>
-										<td><input type="submit" value="Add"/></td>
-									<tr></form></tbody></table></div>
+										<td><label id="tagname">Add Subject</label>
+										</tr><tr><td><input placeholder="Subject Name" type="text" name="subname"/></td></tr>
+										<tr><td><input placeholder="Subject Code" type="text" name="subcode"/></td></tr>
+										<tr><td><input id="delbutton" type="submit" value="  Add  "/></td>
+									</tr></form></tbody></table></div>
 								</div>
 							</div>';
 	return $content;
@@ -215,7 +221,7 @@ function m_faculty_view($data) {
 	$content = '<div class="midcon">
 								<div class="prof">
 								<form method="post" action="?editFaculty">
-									<select name="faculty_id">';
+									<select id="dropdown" name="faculty_id">';
 	$i=0;
 	foreach ($data as $key => $value) {
 		$fid   = $data["$i"]['fid'];
@@ -225,8 +231,8 @@ function m_faculty_view($data) {
 	$i++;
 	}
 	$content .= '</select>
-									 <input type="submit" value="Edit" name="edit"/>
-									 <input type="submit" value="Delete" name="delete"/>
+									 <input id="delbutton" type="submit" value="Edit" name="edit"/>
+									 <input id="delbutton" type="submit" value="Delete" name="delete"/>
 									 </form>
 									 </div></div>';
 	return $content;
@@ -236,7 +242,7 @@ function m_faculty_view($data) {
 function faculty_edit( $data ) {
 	$content = '<div class="midcon">
 								<div class="prof">
-									<table border="1">
+									<table>
 										<tbody>';
 		$fid   = $data['fid'];
 		$fname = $data['fname'];
@@ -270,7 +276,7 @@ function faculty_edit( $data ) {
 										<td>Salary</td>
 										<td><input type="text" name="sal" value="'.$sal.'"/>
 									</tr>
-									<tr><td></td><td><input type="submit" value="save"/></td></tr>
+									<tr><td></td><td><input id="editbutton" type="submit" value="save"/></td></tr>
 									</form>';
 	$content .= '</tbody></table></div>
 								</div>';
@@ -282,7 +288,7 @@ function m_student_view($data) {
 	$content = '<div class="midcon">
 								<div class="prof">
 								<form method="post" action="?editStudent">
-									<select name="s_id">';
+									<select id="dropdown" name="s_id">';
 	$i=0;
 	foreach ($data as $key => $value) {
 		$sid   = $data["$i"]['sid'];
@@ -293,8 +299,8 @@ function m_student_view($data) {
 	$i++;
 	}
 	$content .= '</select>
-									 <input type="submit" value="Edit" name="edit"/>
-									 <input type="submit" value="Delete" name="delete"/>
+									 <input id="delbutton" type="submit" value="Edit" name="edit"/>
+									 <input id="delbutton" type="submit" value="Delete" name="delete"/>
 									 </form>
 									 </div></div>';
 	return $content;
@@ -304,7 +310,7 @@ function m_student_view($data) {
 function student_edit( $data ) {
 	$content = '<div class="midcon">
 								<div class="prof">
-									<table border="1">
+									<table>
 										<tbody>';
 		$sid   = $data['sid'];
 		$fname = $data['fname'];
@@ -335,13 +341,9 @@ function student_edit( $data ) {
 									</tr>
 									<tr>
 										<td>Class</td>
-										<td id="tsel"><input id="nochange" type="text" readonly value="'.$cid.'"/>
-												<input id="nochange" type="text" readonly value="'.$prog.'"/>
-												<input id="nochange" type="text" readonly value="'.$brnch.'"/>
-												<input id="nochange" type="text" readonly value="'.$sec.'"/>
-												<input id="nochange" type="text" readonly value="'.$batch.'"/>
+										<td id="tsel"><input id="nochange" type="text" readonly value="'.$prog.'-'.$brnch.'-'.$sec.'-'.$batch.'"/>
 										</td>
-										<tr><td>Change class</td><td><select name="class">
+										<tr><td>Change class</td><td><select id="dropdown" name="class">
 										';
 			$i = 0;
 			$j = 0;
@@ -367,7 +369,7 @@ function student_edit( $data ) {
       }
       $content .=	'</select></td></tr>
 									</tr>
-									<tr><td></td><td><input type="submit" value="save"/></td></tr>
+									<tr><td></td><td><input id="delbutton" type="submit" value="save"/></td></tr>
 									</form>';
 	$content .= '</tbody></table></div>
 								</div>';
@@ -380,7 +382,7 @@ function QB_view($data) {
 	$content = '<div class="midcon">
 	              <div class="prof">
 	              	<form method="post" action="?createQB1">
-										<select name="sub_id">';
+										<select id="dropdown" name="sub_id">';
 	$i=0;
 	foreach ($data as $key => $value) {
 		$subid   = $data["$i"]['subid'];
@@ -390,7 +392,7 @@ function QB_view($data) {
 	$i++;
 	}
 	$content .= '</select>
-									 <input type="submit" value="create" name="create"/>
+									 <input id="delbutton" type="submit" value="create" name="create"/>
 									 </form>
 									 </div></div>';
 	return $content;
@@ -408,22 +410,22 @@ function QB_view1($data) {
 									<tbody>
 									<tr>
 									<td>Subject ID</td>
-									<td id="nochange"><input type="text" readonly value="'.$subid.'" name="subid"/></td>
+									<td><input id="nochange" type="text" readonly value="'.$subid.'" name="subid"/></td>
 		              </tr>
 		              <tr>
 		              <td>Subject Code</td>
-		              <td id="nochange"><input type="text" readonly value="'.$subcode.'" name="subcode"/></td>
+		              <td><input id="nochange" type="text" readonly value="'.$subcode.'" name="subcode"/></td>
 		              </tr>
 		              <tr>
 		              <td>Subject Name</td>
-		              <td id="nochange"><input type="text" readonly value="'.$subname.'" name="subname"/></td>
+		              <td><input id="nochange" type="text" readonly value="'.$subname.'" name="subname"/></td>
 		              </tr>
 		              <tr>
 		              <td>Faculty ID</td>
-		              <td id="nochange"><input type="text" readonly value="'.$facID.'" name="facid"/></td>
+		              <td><input id="nochange" type="text" readonly value="'.$facID.'" name="facid"/></td>
 		              </tr>
 		              <tr>
-		              <td colspan=2><textarea rows="4" cols="50" name="qcontent" placeholder="Enter ur question here....."></textarea></td>
+		              <td colspan=2><textarea rows="4" cols="30" name="qcontent" placeholder="Enter ur question here....."></textarea></td>
 		              </tr>
 		              <tr>
 		              <td>Question Marks</td>
@@ -448,7 +450,7 @@ function QB_view1($data) {
 		              <tr>
 		              <td>Correct Option</td>
 		              <td>
-		              	<select name=correct>
+		              	<select id="dropdown" name=correct>
 		              		<option type="text" value="A"/>A</option>
 		              		<option type="text" value="B"/>B</option>
 		              		<option type="text" value="C"/>C</option>
@@ -458,7 +460,7 @@ function QB_view1($data) {
 		              </tr>
 		              <tr>
 		              <td>Question Type</td>
-		              <td><select name=lid>';
+		              <td><select id="dropdown" name=lid>';
 		$i = 0;
 		$j = 0;
 		foreach ($data as $key => $value) {
@@ -473,7 +475,7 @@ function QB_view1($data) {
 		$content .='</select></td>
 		              </tr>
 		              <tr>
-		              <td></td><td><input type="submit" value="create" name="create"/></td>
+		              <td></td><td><input id="delbutton" type="submit" value="create" name="create"/></td>
 		              </tr>
 		              </tbody>
 		              </table>
@@ -487,7 +489,7 @@ function createtest_view($data) {
 	$content = '<div class="midcon">
 	              <div class="prof">
 	              	<form method="post" action="?createTest1">
-										<select name="sub_id">';
+										<select id="dropdown" name="sub_id">';
 	$i=0;
 	foreach ($data as $key => $value) {
 		$subid   = $data["$i"]['subid'];
@@ -497,7 +499,7 @@ function createtest_view($data) {
 	$i++;
 	}
 	$content .= '</select>
-									 <input type="submit" value="create" name="create"/>
+									 <input id="delbutton" type="submit" value="create" name="create"/>
 									 </form>
 									 </div></div>';
 	return $content;
@@ -512,10 +514,10 @@ function createtest_view1($data) {
 	              	<form method="post" action="?saveTest">
 										<table border=1><tbody>
 										<tr>
-										<td><input type="text" value="'.$subid.'" name="subid"/></td>
-										<td>Question</td>
-										<td>Marks</td>
-										<td>Level of Hardness</td>';
+										<td><input hidden type="text" value="'.$subid.'" name="subid"/></td>
+										<td id="nochange">Question</td>
+										<td id="nochange">Marks</td>
+										<td id="nochange">Level</td>';
 	
 	foreach ($data as $key => $value) {
 		$qbid  = $data["$i"]['qbid'];
@@ -524,13 +526,13 @@ function createtest_view1($data) {
 		$level = $data["$i"]['level'];
 		$content .= '<tr>
 									<td><input type="checkbox" name="check_list[]" value="'.$qbid.'"></td>
-									<td><textarea rows=4 cols=50 readonly name="ques" >'.$ques.'</textarea></td>
+									<td>'.$ques.'</td>
 									<td>'.$marks.'</td>
 									<td>'.$level.'</td>
 								</tr>';	
 	$i++;
 	}
-	$content .= '	 <tr><td></td><td><input type="submit" value="create" name="create"/></td></tr>
+	$content .= '	 <tr><td></td><td><input id="delbutton" type="submit" value="create" name="create"/></td></tr>
 									</tbody></table>
 									 </form>
 									 </div></div>';
@@ -546,7 +548,7 @@ function givetest_view($data) {
 	$content = '<div class="midcon">
 	              <div class="prof">
 	              	<form method="post" action="?giveExam1">
-										<select name="test_id">';
+										<select id="dropdown" name="test_id">';
 	$i=0;
 	foreach ($data as $key => $value) {
 		$testid  = $data["$i"]['tid'];
@@ -558,7 +560,7 @@ function givetest_view($data) {
 	$i++;
 	}
 	$content .= '</select>
-									 <input type="submit" value="Start Exam" name="start"/>
+									 <input id="delbutton" type="submit" value="Start Exam" name="start"/>
 									 </form>
 									 </div></div>';
 	return $content;
@@ -567,8 +569,10 @@ function givetest_view($data) {
 function givetest_view1($data) {
 	$content = '<div class="midcon">
 	              <div class="prof">
-	              	<form method="post" action="?saveExam">
-	              	<table border=1>
+	              <div class="timer"><p id="status"></p></div>
+	              <script type="text/javascript">countDown();</script>
+	              	<form name="quiz" method="post" action="?saveExam">
+	              	<table >
 	              	<tbody>';
 	$i=0;
 	foreach ($data as $key => $value) {
@@ -580,11 +584,13 @@ function givetest_view1($data) {
 		$cD      = $data["$i"]['cD'];
 		$corr    = $data["$i"]['correct'];
 		$pid     = $data["$i"]['pqid'];
+		$level   = $data["$i"]['level'];
 		$q       = $i+1;
 		$tid     = $data["$i"]['tid'];
 		$content .= '<tr>
-								<td>'."ques no".$q.'</td>
+								<td>'."Q.no ".$q.'. </td>
 								<td colspan=2>'.$ques.'</td>
+								<td><input type="radio" hidden checked name="option['.$i.']" value="0"></td>
 								</tr>
 								<tr>
 								<td><input hidden readonly name="paperid['.$i.']" value="'.$pid.'"/></td>
@@ -595,17 +601,154 @@ function givetest_view1($data) {
 		            <td><input hidden readonly name="tid" value="'.$tid.'"/></td>
 								<td><input type="radio" name="option['.$i.']" value="C">'.$cC.'</td>
 								<td><input type="radio" name="option['.$i.']" value="D">'.$cD.'</td>
-		            </tr>';	
+		            </tr>
+		            <tr><td colspan=3><hr></td></tr>';	
 	$i++;
 	}
-	$content .= '<tr><td><input type="submit" value="Save" name="save"/></td></tr>
+	$content .= '<tr><td></td><td colspan=2><input id="editbutton" type="submit" value="Save" name="save"/></td></tr>
 								</tbody></table>
 									 </form>
 									 </div></div>';
 	return $content;
 }
 
-function result_view($data) {
+function result_view($data,$data1) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<table>
+	              	<tbody>';
+	$j = 0;
+	$i = 0;
+	foreach ($data as $key => $value) {
+		if($j>1) {
+		$ques    = $data["$i"]['ques'];
+		$maxmark = $data["$i"]['maxmarks'];
+		$resp    = $data["$i"]['response'];
+		$corr    = $data["$i"]['correct'];
+		$mark    = $data["$i"]['urmark'];
+		$level   = $data["$i"]['level'];
+		$q       = $i+1;
+
+		if($mark==0){
+			$content .= '<tr><td colspan =2 style="color:red;">Attempted Question(wrong)</td></tr>';
+		}
+		else{
+			$content .= '<tr><td colspan =2 style="color:green;">Attempted Question(correct)</td></tr>';
+		}
+
+		$content .= '<tr>
+								<td>'."Q.N. ".$q.'</td>
+								<td>'.$ques.'</td>
+								<td>'.$level.'</td>
+								</tr>
+								<tr>
+								<td></td>
+								<td>Your Answer</td>
+								<td>'.$resp.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Correct Answer</td>
+								<td>'.$corr.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Max Marks</td>
+								<td>'.$maxmark.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Marks Earned</td>
+								<td>'.$mark.'</td>
+		            </tr><br>';	
+		$i++;         
+		          }
+	$j++;
+	}
+	$j1 = 0;
+	$i1 = 0;
+	foreach ($data1 as $key => $value) {
+		if($j1>1) {
+		$ques1    = $data1["$i1"]['ques'];
+		$maxmark1 = $data1["$i1"]['maxmarks'];
+		$resp1    = $data1["$i1"]['response'];
+		$corr1    = $data1["$i1"]['correct'];
+		$mark1    = $data1["$i1"]['urmark'];
+		$level1   = $data1["$i1"]['level'];
+		$q1       = $i1+1;
+		$content .= '<tr><td style="color:orange;">Unattempted Question</td></tr>
+								<tr>
+								<td>'."Q.N. ".$q1.'</td>
+								<td>'.$ques1.'</td>
+								<td>'.$level1.'</td>
+								</tr>
+								<tr>
+								<td></td>
+								<td>Your Answer</td>
+								<td>'.$resp1.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Correct Answer</td>
+								<td>'.$corr1.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Max Marks</td>
+								<td>'.$maxmark1.'</td>
+		            </tr>
+		            <tr>
+		            <td></td>
+								<td>Marks Earned</td>
+								<td>'.$mark1.'</td>
+		            </tr><br>';	
+		$i1++;         
+		          }
+	$j1++;
+	}
+	$content .= '</tbody></table>';
+	$total     = $data1['paper_total'];
+	$attempt   = $data['attempt'];
+	$unattempt = $data1['unattempt'];
+	$subtotal  = $data['total'];
+	$content .= '	<br>
+								<hr>
+								<table border=1	>
+	              <tbody>
+	              <tr><td id="nochange" colspan=2>Report Card</td>
+	              <tr><td>Total Attempted questions</td><td>'.$attempt.'</td></tr>
+								<tr><td>Total Unattempted questions</td><td>'.$unattempt.'</td></tr
+								<tr><td>Total Marks</td><td>'.$total.'</td></tr>
+								<tr><td>Sub Total</td><td>'.$subtotal.'</td></tr>
+								</tbody></table>
+								</form>
+								</div></div>';
+	return $content;
+}
+
+function testeval_view($data) {
+	$content = '<div class="midcon">
+	              <div class="prof">
+	              	<form method="post" action="?testEvaluation1">
+										<select id="dropdown" name="test_id">';
+	$i=0;
+	foreach ($data as $key => $value) {
+		$testid  = $data["$i"]['tid'];
+		$subname = $data["$i"]['subname'];
+		$subcode = $data["$i"]['subcode'];
+		$faculty = $data["$i"]['faculty'];
+		$date    = $data["$i"]['date'];
+		$content .= '<option value="'.$testid.'">'.$subname." (sub code -- ".$subcode.") by ".$faculty." on ".$date.'</option>';	
+	$i++;
+	}
+	$content .= '</select>
+									 <input id="delbutton" type="submit" value="See Evaluation" name="start"/>
+									 </form>
+									 </div></div>';
+	return $content;
+}
+
+function testeval_view1($data) {
 	$content = '<div class="midcon">
 	              <div class="prof">
 	              	<table border=1>
@@ -619,10 +762,12 @@ function result_view($data) {
 		$resp    = $data["$i"]['response'];
 		$corr    = $data["$i"]['correct'];
 		$mark    = $data["$i"]['urmark'];
+		$level   = $data["$i"]['level'];
 		$q       = $i+1;
 		$content .= '<tr>
 								<td>'."ques no".$q.'</td>
-								<td colspan=2>'.$ques.'</td>
+								<td>'.$ques.'</td>
+								<td>'.$level.'</td>
 								</tr>
 								<tr>
 								<td></td>
@@ -664,7 +809,15 @@ function fail_view() {
 	return $content;
 }  
 function success_view() {
-	$content = '<div class="midcon"><h2>Successfully Done</h2></div>';
+	$content = '<div class="midcon"><div class="prof"><h2>Successfully Done</h2></div></div>';
 	return $content;
 }
+function logout_view() {
+	$content = '<center><div class="midcon"><div class="prof"><h2>Logout successfully</h2><p><a href="http://'.$GLOBALS['baseurl'].'">Click here</a> for login</p></div></div></center>';
+	return $content;
+}
+function accessdeny_view() {
+	$content = '<center><div class="midcon"><div class="prof"><div class="error"><h2>Access Denied</h2></div></div></div><center>';
+	return $content;
+}  
 ?>
